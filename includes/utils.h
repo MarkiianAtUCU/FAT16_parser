@@ -7,7 +7,7 @@
 
 #include "HexReader.h"
 #include <bitset>
-
+#include <iomanip>
 
 namespace FAT16 {
     struct bootSector {
@@ -138,8 +138,6 @@ std::string attributeParse(std::bitset<8> b, std::map<uint8_t, std::string> map)
         }
     }
 
-//    ss << std::endl<< b  << std::endl;
-//    ss << std::endl<< (b & std::bitset<8>(0x01 )).count() << std::endl;
 
     return ss.str();
 }
@@ -156,9 +154,6 @@ void printFileDescription(FAT16::file & file, std::map<uint8_t, std::string> map
     ss << timeParse(std::bitset<16>(file.fileModifiedTimeHMS)) ;
     ss << "   "  << attributeParse( file.attr , map) << "    ";
     ss << std::setfill(' ') << std::setw(5) << file.address << "    "<< std::endl;
-
-//    std::cout << std::bitset<16>(file.fileModifiedDate) << std::endl;
-//    std::cout << bitsetPart<10,16>(std::bitset<16>(file.fileModifiedDate))<< std::endl;
     std::cout << ss.str();
 
 }

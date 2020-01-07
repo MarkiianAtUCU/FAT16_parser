@@ -3,15 +3,13 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include <iomanip>
 #include <map>
 #define BOOT_SECOR_SIZE 512
 #define DIR_ENTRY_SIZE 32
 
 #include "utils.h"
 
-//std::string s = std::bitset< 64 >( 12345 ).to_string(); // string conversion
-//std::cout << std::bitset< 64 >( 54321 ) << ' '; // direct output
+
 
 int main(int argc, char **argv) {
     std::map<uint8_t, std::string> attributeNames;
@@ -27,6 +25,7 @@ int main(int argc, char **argv) {
         std::cout << "Incorrect number of arguments, usage:\n    FATParser [filename]"<< std::endl;
         return 1;
     }
+
     int fd = open(argv[1], O_RDONLY);
     if (fd < 0) {
         std::cerr << "Cannot open file: " << argv[1]  << std::endl;
