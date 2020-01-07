@@ -13,19 +13,27 @@
 //std::string s = std::bitset< 64 >( 12345 ).to_string(); // string conversion
 //std::cout << std::bitset< 64 >( 54321 ) << ' '; // direct output
 
-int main() {
+int main(int argc, char **argv) {
     std::map<uint8_t, std::string> attributeNames;
-    attributeNames[0x01] = std::string{"Read only"};
-    attributeNames[0x02] = std::string{"Hidden file"};
-    attributeNames[0x04] = std::string{"System file"};
-    attributeNames[0x08] = std::string{"Volume label"};
-    attributeNames[0x0f] = std::string{"Long file name"};
-    attributeNames[0x10] = std::string{"Directiry"};
-    attributeNames[0x20] = std::string{"Archive"};
+    attributeNames[0x01] = std::string{" Ro "};
+    attributeNames[0x02] = std::string{" Hf "};
+    attributeNames[0x04] = std::string{" Sf "};
+    attributeNames[0x08] = std::string{" Vl "};
+    attributeNames[0x0f] = std::string{"LFN "};
+    attributeNames[0x10] = std::string{" Di "};
+    attributeNames[0x20] = std::string{" Ar "};
 
-    int fd = open("/home/markiian/Downloads/hd0_just_FAT16_without_MBR.img", O_RDONLY);
+    if (argc!=2) {
+        std::cout << "Incorrect number of arguments, usage:\n    FATParser [filename]"<< std::endl;
+        return 1;
+    }
+    int fd = open(argv[1], O_RDONLY);
+    if (fd < 0) {
+        std::cerr << "Cannot open file: " << argv[1]  << std::endl;
+        return 1;
+    }
 
-    void * dataBootSector = mmap(NULL, BOOT_SECOR_SIZE, PROT_READ, MAP_PRIVATE, fd, 0);
+    void * dataBootSector = mmap(nullptr, BOOT_SECOR_SIZE, PROT_READ, MAP_PRIVATE, fd, 0);
     RawData imageBootSector{dataBootSector, BOOT_SECOR_SIZE};
     FAT16::bootSector bootSector(imageBootSector);
     munmap(dataBootSector, BOOT_SECOR_SIZE);
@@ -46,7 +54,7 @@ int main() {
     size_t desiredOffset = BOOT_SECOR_SIZE + bootSector.FATNum * bootSector.FATSize * bootSector.bytesPerSector;
     size_t validOffset = (desiredOffset / pageSize) * pageSize;
     size_t additionalOffset = desiredOffset - validOffset;
-    void * dataRootDir = mmap(NULL,
+    void * dataRootDir = mmap(nullptr,
                               bootSector.rootDirCapacity * DIR_ENTRY_SIZE + additionalOffset,
                               PROT_READ, MAP_PRIVATE, fd,
                               validOffset);
@@ -57,7 +65,7 @@ int main() {
         if (file.status == 0x00) {
             break;
         }
-        printFileDescription(file);
+        printFileDescription(file, attributeNames);
     }
 
     munmap(dataRootDir, bootSector.rootDirCapacity * DIR_ENTRY_SIZE + additionalOffset);

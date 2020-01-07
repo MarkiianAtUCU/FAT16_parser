@@ -4,4 +4,4 @@ project(Fat)
 set(CMAKE_CXX_STANDARD 14)
 
 include_directories(includes)
-add_executable(Fat main.cpp includes/HexReader.h includes/utils.h)
+add_executable(FATParser main.cpp includes/HexReader.h includes/utils.h)
